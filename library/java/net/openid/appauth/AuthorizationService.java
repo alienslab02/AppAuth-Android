@@ -570,21 +570,68 @@ public class AuthorizationService {
 
     /**
      * Sends an authorization request to the authorization service, using a
-     * [custom tab](https://developer.chrome.com/multidevice/android/customtabs).
+     * [custom tab](https://developer.chrome.com/multidevice/android/customtabs)
+     * if available, or a browser instance.
+     * The parameters of this request are determined by both the authorization service
+     * configuration and the provided {@link AuthorizationRequest request object}. Upon completion
+     * of this request, the provided {@link PendingIntent completion PendingIntent} will be invoked.
+     * If the user cancels the authorization request, the current activity will regain control.
+     */
+    public void performLogoutRequest(
+        @NonNull LogoutRequest request,
+        @NonNull PendingIntent completedIntent) {
+        performLogoutRequest(
+            request,
+            completedIntent,
+            null,
+            createCustomTabsIntentBuilder().build());
+    }
+
+    /**
+     * Sends an authorization request to the authorization service, using a
+     * [custom tab](https://developer.chrome.com/multidevice/android/customtabs)
+     * if available, or a browser instance.
      * The parameters of this request are determined by both the authorization service
      * configuration and the provided {@link AuthorizationRequest request object}. Upon completion
      * of this request, the provided {@link PendingIntent completion PendingIntent} will be invoked.
      * If the user cancels the authorization request, the provided
      * {@link PendingIntent cancel PendingIntent} will be invoked.
+     */
+    public void performLogoutRequest(
+        @NonNull LogoutRequest request,
+        @NonNull PendingIntent completedIntent,
+        @NonNull PendingIntent canceledIntent) {
+        performLogoutRequest(
+            request,
+            completedIntent,
+            canceledIntent,
+            createCustomTabsIntentBuilder().build());
+    }
+
+    /**
+     * Sends an authorization request to the authorization service, using a
+     * [custom tab](https://developer.chrome.com/multidevice/android/customtabs).
+     * The parameters of this request are determined by both the authorization service
+     * configuration and the provided {@link AuthorizationRequest request object}. Upon completion
+     * of this request, the provided {@link PendingIntent completion PendingIntent} will be invoked.
+     * If the user cancels the authorization request, the current activity will regain control.
      *
      * @param customTabsIntent
      *     The intent that will be used to start the custom tab. It is recommended that this intent
      *     be created with the help of {@link #createCustomTabsIntentBuilder(Uri[])}, which will
      *     ensure that a warmed-up version of the browser will be used, minimizing latency.
-     *
-     * @throws android.content.ActivityNotFoundException if no suitable browser is available to
-     *     perform the authorization flow.
      */
+    public void performLogoutRequest(
+        @NonNull LogoutRequest request,
+        @NonNull PendingIntent completedIntent,
+        @NonNull CustomTabsIntent customTabsIntent) {
+        performLogoutRequest(
+            request,
+            completedIntent,
+            null,
+            customTabsIntent);
+    }
+
     public void performLogoutRequest(
         @NonNull LogoutRequest request,
         @NonNull PendingIntent completedIntent,
