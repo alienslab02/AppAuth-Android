@@ -567,4 +567,57 @@ public class AuthorizationService {
         void onRegistrationRequestCompleted(@Nullable RegistrationResponse response,
                                             @Nullable AuthorizationException ex);
     }
+
+    /**
+     * Sends an authorization request to the authorization service, using a
+     * [custom tab](https://developer.chrome.com/multidevice/android/customtabs).
+     * The parameters of this request are determined by both the authorization service
+     * configuration and the provided {@link AuthorizationRequest request object}. Upon completion
+     * of this request, the provided {@link PendingIntent completion PendingIntent} will be invoked.
+     * If the user cancels the authorization request, the provided
+     * {@link PendingIntent cancel PendingIntent} will be invoked.
+     *
+     * @param customTabsIntent
+     *     The intent that will be used to start the custom tab. It is recommended that this intent
+     *     be created with the help of {@link #createCustomTabsIntentBuilder(Uri[])}, which will
+     *     ensure that a warmed-up version of the browser will be used, minimizing latency.
+     *
+     * @throws android.content.ActivityNotFoundException if no suitable browser is available to
+     *     perform the authorization flow.
+     */
+    public void performLogoutRequest(
+        @NonNull LogoutRequest request,
+        @NonNull PendingIntent completedIntent,
+        @Nullable PendingIntent canceledIntent,
+        @NonNull CustomTabsIntent customTabsIntent) {
+        checkNotDisposed();
+
+        if (mBrowser == null) {
+            throw new ActivityNotFoundException();
+        }
+
+        Uri requestUri = request.toUri();
+        Intent intent;
+        if (mBrowser.useCustomTab) {
+            intent = customTabsIntent.intent;
+        } else {
+            intent = new Intent(Intent.ACTION_VIEW);
+        }
+        intent.setPackage(mBrowser.packageName);
+        intent.setData(requestUri);
+
+        Logger.debug("Using %s as browser for auth, custom tab = %s",
+            intent.getPackage(),
+            mBrowser.useCustomTab.toString());
+        intent.putExtra(CustomTabsIntent.EXTRA_TITLE_VISIBILITY_STATE, CustomTabsIntent.NO_TITLE);
+
+        Logger.debug("Initiating authorization request to %s",
+            LogoutRequest.LOGOUT_URL);
+        mContext.startActivity(LogoutManagementActivity.createStartIntent(
+            mContext,
+            request,
+            intent,
+            completedIntent,
+            canceledIntent));
+    }
 }
