@@ -35,7 +35,7 @@ import static net.openid.appauth.Preconditions.checkNotNull;
 
 public class LogoutRequest {
 
-    public static final String LOGOUT_URL = "https://www.google.com/accounts/Logout?continue=https://appengine.google.com/_ah/logout";
+    public static final String LOGOUT_URL = "https://www.google.com/accounts/Logout?continue=https://appengine.google.com/_ah/logout?";
     private static final String PARAM_REDIRECT_URI = "continue";
     private static final String KEY_REDIRECT_URI = "redirectUri";
     private static final String KEY_ADDITIONAL_PARAMETERS = "additionalParameters";
@@ -128,14 +128,16 @@ public class LogoutRequest {
      */
     @NonNull
     public Uri toUri() {
-        Uri.Builder uriBuilder = Uri.parse(LOGOUT_URL).buildUpon()
-            .appendQueryParameter(PARAM_REDIRECT_URI, redirectUri.toString());
+//        Uri.Builder uriBuilder = Uri.parse(LOGOUT_URL).buildUpon()
+//            .appendQueryParameter(PARAM_REDIRECT_URI, redirectUri.toString());
+//
+//        for (Entry<String, String> entry : additionalParameters.entrySet()) {
+//            uriBuilder.appendQueryParameter(entry.getKey(), entry.getValue());
+//        }
 
-        for (Entry<String, String> entry : additionalParameters.entrySet()) {
-            uriBuilder.appendQueryParameter(entry.getKey(), entry.getValue());
-        }
+//        return uriBuilder.build();
+        return Uri.parse(LOGOUT_URL + PARAM_REDIRECT_URI + "=" + redirectUri.toString());
 
-        return uriBuilder.build();
     }
 
     /**
