@@ -66,7 +66,7 @@ public class LogoutRequest {
         private Map<String, String> mAdditionalParameters = new HashMap<>();
 
         /**
-         * Creates an authorization request builder with the specified mandatory properties.
+         * Creates a logout request builder with the specified mandatory properties.
          */
         public Builder(@NonNull Uri redirectUri) {
             setRedirectUri(redirectUri);
